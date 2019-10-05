@@ -6,7 +6,7 @@ import numpy as np;
 import cv2;
 import tensorflow as tf;
 
-class Predictor(object):
+class Encoder(object):
 
     def __init__(self, model_path = 'models'):
 
@@ -26,20 +26,14 @@ class Predictor(object):
         outputs = tf.concat(inputs, axis = 0);
         return outputs;
 
-    def encoding(self, imgs):
+    def encode(self, imgs):
 
         assert type(imgs) is list;
         assert np.all([type(img) is np.ndarray and len(img.shape) == 3 for img in imgs]);
         batch = self.batch(imgs);
         return self.model(batch);
 
-    def template_encoding(self, imgs):
-
-        assert type(imgs) is list;
-        assert np.all([type(img) is np.ndarray and len(img.shape) == 3 for img in imgs]);
-        
-
 if __name__ == "__main__":
 
     assert tf.executing_eagerly() == True;
-    predictor = Predictor();
+    encoder = Encoder();
