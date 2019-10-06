@@ -95,7 +95,7 @@ class Recognizer(object):
         downright = tf.reverse(downright, axis = [1]); # in h,w order
         boxes = tf.concat([upperleft, downright], axis = -1) / tf.cast(tf.tile(image.shape[0:2], (2,)), dtype = tf.float32);
         image = tf.expand_dims(tf.cast(image, dtype = tf.float32), axis = 0);
-        faces = tf.crop_and_resize(image, boxes, tf.zeros((boxes.shape[0],), dtype = tf.int32),(224,224));
+        faces = tf.image.crop_and_resize(image, boxes, tf.zeros((boxes.shape[0],), dtype = tf.int32),(224,224));
         for face in faces:
             cv2.imshow('face', face.numpy().astype('uint8'));
             cv2.waitKey();
@@ -111,9 +111,30 @@ class Recognizer(object):
             else: retval.append((rect,""));
         return retval;
 
+    def visualize(self, img, targets):
+
+        for target in targets:
+            rect, label = target;
+            cv2.rectangle(img, tuple(rect[0:2]), tuple(rect[2:4]), (0,0,255,), 2);
+            cv2.putText(img, (label if label != "" else "???"), tuple(rect[0:2]), cv2.FONT_HERSHEY_SCRIPT_SIMPLEX, 2, (0,255,0), 3, 8);
+        return img;
+
 if __name__ == "__main__":
 
     assert tf.executing_eagerly() == True;
     recognizer = Recognizer();
     recognizer.loadFaceDB();
+    cap = cv2.VideoCapture('video1.mp4');
+    if cap is None:
+        print("invalid video!");
+        exit(0);
+    while True:
+        ret, frame = cap.read();
+        if ret == False: break;
+        targets = recognizer.recognize(frame);
+        img = recognizer.visualize(img, targets);
+        cv2.imshow('detection', img);
+        k = cv2.waitKey(25);
+        if k == 'q': break;
+
 
