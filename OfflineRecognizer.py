@@ -120,9 +120,13 @@ class Recognizer(object):
 if __name__ == "__main__":
 
     assert tf.executing_eagerly() == True;
+    import sys;
+    if len(sys.argv) != 2:
+        print("Usage: " + sys.argv[0] + " <video>");
+        exit(1);
     recognizer = Recognizer();
     recognizer.loadFaceDB();
-    cap = cv2.VideoCapture('video1.mp4');
+    cap = cv2.VideoCapture(sys.argv[1]);
     if cap is None:
         print("invalid video!");
         exit(0);
@@ -132,7 +136,7 @@ if __name__ == "__main__":
         targets = recognizer.recognize(img);
         img = recognizer.visualize(img, targets);
         cv2.imshow('detection', img);
-        k = cv2.waitKey(25);
+        k = cv2.waitKey(int(cap.get(cv2.CAP_PROP_FPS)));
         if k == 'q': break;
 
 
