@@ -10,14 +10,14 @@ class Encoder(object):
 
     def __init__(self, model_path = 'models'):
 
-        self.model = tf.keras.models.load_model(join(model_path, 'weights.h5'), compile = False);
+        self.model = tf.keras.models.load_model(join(model_path, 'vggface2.h5'), compile = False);
 
     def preprocess(self, img):
 
         assert img.shape[2] == 3;
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB);
         inputs = tf.expand_dims(img, axis = 0);
-        outputs = tf.image.resize_with_crop_or_pad(inputs, 224, 224);
+        outputs = tf.image.resize_with_pad(inputs, 224, 224);
         return outputs;
 
     def batch(self, imgs):
