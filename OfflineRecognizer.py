@@ -3,6 +3,7 @@
 from os import listdir;
 from os.path import join, exists, isdir;
 import pickle;
+import numpy as np;
 import cv2;
 import tensorflow as tf;
 from OfflineDetector import Detector;
@@ -79,6 +80,9 @@ class Recognizer(object):
     def recognize(self, image):
 
         assert image is not None;
+        if self.knn is None or self.ids is None:
+            print('call load() or loadFaceDB() before this method!');
+            return;
         rectangles = self.detector.detect(image);
         upperleft = rectangles[...,0:2];
         downright = rectangles[...,2:4];
@@ -96,8 +100,16 @@ class Recognizer(object):
             cv2.imshow('face', face.numpy().astype('uint8'));
             cv2.waitKey();
         features = self.encoder.encode(faces);
-        ret, results, neighbours, dist = self.knn.findNearest(features.numpy(), k = 1);
-        # TODO
+        ret, results, neighbours, dist = self.knn.findNearest(features.numpy(), k = 3);
+        retval = list();
+        for i in range(features.shape[0]):
+            # for each input feature
+            rect = rectangles[i];
+            labels, counts = np.unique(neighbours[i].astype('uint32'), return_counts = True);
+            label = labels[np.argmax(counts)];
+            if np.min(dist[i,neighbours[i] == label]) <= 0.15: retval.append((rect,self.ids[label]));
+            else: retval.append((rect,""));
+        return retval;
 
 if __name__ == "__main__":
 
