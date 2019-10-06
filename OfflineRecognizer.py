@@ -97,9 +97,6 @@ class Recognizer(object):
         image = tf.expand_dims(tf.cast(image, dtype = tf.float32), axis = 0);
         faces = tf.image.crop_and_resize(image, boxes, tf.zeros((boxes.shape[0],), dtype = tf.int32),(224,224));
         faces = [face.numpy() for face in faces];
-        for face in faces:
-            cv2.imshow('face', face.numpy().astype('uint8'));
-            cv2.waitKey();
         features = self.encoder.encode(faces);
         ret, results, neighbours, dist = self.knn.findNearest(features.numpy(), k = 3);
         retval = list();
