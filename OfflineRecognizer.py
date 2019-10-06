@@ -96,6 +96,7 @@ class Recognizer(object):
         boxes = tf.concat([upperleft, downright], axis = -1) / tf.cast(tf.tile(image.shape[0:2], (2,)), dtype = tf.float32);
         image = tf.expand_dims(tf.cast(image, dtype = tf.float32), axis = 0);
         faces = tf.image.crop_and_resize(image, boxes, tf.zeros((boxes.shape[0],), dtype = tf.int32),(224,224));
+        faces = [face.numpy() for face in faces];
         for face in faces:
             cv2.imshow('face', face.numpy().astype('uint8'));
             cv2.waitKey();
@@ -129,9 +130,9 @@ if __name__ == "__main__":
         print("invalid video!");
         exit(0);
     while True:
-        ret, frame = cap.read();
+        ret, img = cap.read();
         if ret == False: break;
-        targets = recognizer.recognize(frame);
+        targets = recognizer.recognize(img);
         img = recognizer.visualize(img, targets);
         cv2.imshow('detection', img);
         k = cv2.waitKey(25);

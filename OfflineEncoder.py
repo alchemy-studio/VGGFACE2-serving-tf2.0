@@ -29,6 +29,7 @@ class Encoder(object):
     def encode(self, imgs):
 
         assert type(imgs) is list;
+        if len(imgs) == 0: return tf.zeros((0,self.model.outputs[0].shape[-1]), dtype = tf.float32);
         assert np.all([type(img) is np.ndarray and len(img.shape) == 3 for img in imgs]);
         batch = self.batch(imgs);
         return self.model(batch);
