@@ -60,7 +60,7 @@ class Recognizer(object):
                         center = (upperleft + downright) // 2;
                         upperleft = center - tf.constant([length,length], dtype = tf.float32) // 2;
                         downright = upperleft + tf.constant([length,length], dtype = tf.float32);
-                        face = image[upperleft[1]:downright[1],upperleft[0]:downright[0],:];
+                        face = image[int(upperleft[1]):int(downright[1]),int(upperleft[0]):int(downright[0]),:];
                         imgs.append(face);
                 feature = self.encoder.encode(imgs);
                 label = tf.tile(tf.constant([[label]], dtype = tf.int32), (feature.shape[0],1));
